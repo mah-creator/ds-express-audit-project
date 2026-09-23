@@ -1,0 +1,23 @@
+node_modules
+# Keep environment variables out of version control
+.env
+
+/generated/prisma
+
+# IDE and agent config
+.agents/
+.claude/
+.windsurf/
+skills-lock.json
+
+# Scratch scripts
+add-swagger-tags.js
+add-swagger.js
+enhance-swagger.js
+fix-n.js
+fix.js
+generate.js
+swagger-autogen.js
+.package_testers.txt.swp
+package_testers.md
+

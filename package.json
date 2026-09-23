@@ -4,7 +4,7 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon --exec tsx src/index.ts",
+    "dev": "node --watch-path=.env --watch-path=src --import tsx src/index.ts",
     "start": "tsx src/index.ts"
   },
   "keywords": [],

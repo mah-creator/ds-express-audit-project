@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { Errors, asyncHandler } from 'ds-express-errors';
-import { prisma } from '../index';
+import { prisma } from '../index.js';
 // In a real app you'd use bcrypt for hashing passwords.
 // For this scaffolding, we simulate it.
 // import bcrypt from 'bcryptjs';

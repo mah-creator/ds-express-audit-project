@@ -4,7 +4,7 @@ import { Pool } from 'pg';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient, Prisma } from '@prisma/client';
 import { z } from 'zod';
-import { errorHandler, setConfig, initGlobalHandlers, gracefulHttpClose } from 'ds-express-errors';
+import { asyncHandler, errorHandler, setConfig, initGlobalHandlers, gracefulHttpClose, Errors } from 'ds-express-errors';
 import authRoutes from './routes/auth.routes.js';
 import appointmentRoutes from './routes/appointment.routes.js';
 import doctorRoutes from './routes/doctor.routes.js';

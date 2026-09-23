@@ -1,0 +1,175 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql" // Adjust according to your DB choice
+}
+
+model User {
+  id               String            @id @default(uuid())
+  email            String?           @unique
+  passwordHash     String?
+  role             String? // Derived from .NET Identity Roles
+  profile          Profile?
+  clinicAdmin      ClinicAdmin?
+  patient          Patient?
+  doctor           Doctor?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+}
+
+model Profile {
+  id               String            @id @default(uuid())
+  userId           String            @unique
+  user             User              @relation(fields: [userId], references: [id])
+  name             String?
+  gender           String?
+  dob              DateTime?         @db.Date
+  profileImagePath String?
+}
+
+model ClinicAdmin {
+  id               String            @id @default(uuid())
+  userId           String            @unique
+  user             User              @relation(fields: [userId], references: [id])
+  clinicId         String            @unique
+  clinic           Clinic            @relation(fields: [clinicId], references: [id])
+}
+
+model Patient {
+  id               String            @id @default(uuid())
+  userId           String            @unique
+  user             User              @relation(fields: [userId], references: [id])
+  favoriteDoctors  FavoriteDoctor[]
+  favoriteClinics  FavoriteClinic[]
+  locations        PatientLocation[]
+  appointments     Appointment[]
+}
+
+model Doctor {
+  id               String            @id @default(uuid())
+  userId           String            @unique
+  user             User              @relation(fields: [userId], references: [id])
+  bio              String?
+  experienceYears  Int               @default(0)
+  ratingCount      Int               @default(0)
+  rating           Float             @default(0)
+  clinicId         String
+  clinic           Clinic            @relation(fields: [clinicId], references: [id])
+  categoryId       String
+  category         DoctorCategory    @relation(fields: [categoryId], references: [id])
+  schedules        Schedule[]
+  appointments     Appointment[]
+  favoritedBy      FavoriteDoctor[]
+}
+
+model DoctorCategory {
+  id                  String            @id @default(uuid())
+  name                String
+  normalizedName      String
+  description         String?
+  logoPath            String?
+  doctors             Doctor[]
+}
+
+model Clinic {
+  id               String            @id @default(uuid())
+  name             String
+  description      String?
+  imagePath        String?
+  rating           Float             @default(0)
+  ratingCount      Int               @default(0)
+  category         String?           // Based on .NET Clinic.Category
+  admin            ClinicAdmin?
+  doctors          Doctor[]
+  favoritedBy      FavoriteClinic[]
+  locationId       String?           @unique
+  location         Location?         @relation(fields: [locationId], references: [id])
+}
+
+model Location {
+  id               String            @id @default(uuid())
+  longitude        Float?
+  latitude         Float?
+  streetNumber     Int?
+  streetName       String?
+  country          String?
+  city             String?
+  postalCode       String?
+  addressText      String?
+  clinic           Clinic?
+  patientLocations PatientLocation[]
+}
+
+model PatientLocation {
+  id               String            @id @default(uuid())
+  patientId        String
+  patient          Patient           @relation(fields: [patientId], references: [id])
+  locationId       String
+  location         Location          @relation(fields: [locationId], references: [id])
+  isPrimary        Boolean           @default(false)
+  locationName     String
+}
+
+model FavoriteDoctor {
+  patientId        String
+  doctorId         String
+  patient          Patient           @relation(fields: [patientId], references: [id])
+  doctor           Doctor            @relation(fields: [doctorId], references: [id])
+
+  @@id([patientId, doctorId])
+}
+
+model FavoriteClinic {
+  patientId        String
+  clinicId         String
+  patient          Patient           @relation(fields: [patientId], references: [id])
+  clinic           Clinic            @relation(fields: [clinicId], references: [id])
+
+  @@id([patientId, clinicId])
+}
+
+model Schedule {
+  id               String            @id @default(uuid())
+  doctorId         String
+  doctor           Doctor            @relation(fields: [doctorId], references: [id])
+  date             DateTime          @db.Date
+  isAvailable      Boolean           @default(true)
+  timeSlots        TimeSlot[]
+}
+
+model TimeSlot {
+  id               String            @id @default(uuid())
+  scheduleId       String
+  schedule         Schedule          @relation(fields: [scheduleId], references: [id])
+  startTime        DateTime          @db.Time
+  endTime          DateTime          @db.Time
+  isFree           Boolean           @default(true)
+  appointment      Appointment?
+}
+
+model Appointment {
+  id               String            @id @default(uuid())
+  status           String            @default("Upcoming") // e.g. Upcoming, Completed, Canceled
+  doctorId         String
+  patientId        String
+  timeSlotId       String            @unique
+  doctor           Doctor            @relation(fields: [doctorId], references: [id])
+  patient          Patient           @relation(fields: [patientId], references: [id])
+  timeSlot         TimeSlot          @relation(fields: [timeSlotId], references: [id])
+  review           AppointmentReview?
+}
+
+model AppointmentReview {
+  id               String            @id @default(uuid())
+  appointmentId    String            @unique
+  appointment      Appointment       @relation(fields: [appointmentId], references: [id])
+  rating           Float             @default(0)
+  reviewText       String
+}
+
+model Banner {
+  id               String            @id @default(uuid())
+  imagePath        String
+}
