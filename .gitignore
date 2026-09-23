@@ -21,3 +21,9 @@ swagger-autogen.js
 .package_testers.txt.swp
 package_testers.md
 
+# Audit deliverables (submitted via Upwork, not part of the project repo)
+QA_AUDIT_REPORT.md
+TESTING_GUIDE.md
+TEST_RESULTS.md
+REVIEW.md
+
